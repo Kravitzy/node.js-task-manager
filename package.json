@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
+    "mongo": "D:/Documents/mongodb/bin/mongod.exe --dbpath=D:/Documents/mongodb-data",
     "dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
     "test": "env-cmd -f ./config/test.env jest --watch --runInBand"
   },
@@ -17,6 +18,7 @@
   "dependencies": {
     "@sendgrid/mail": "^7.4.0",
     "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.4.0",
     "mongodb": "^3.1.10",

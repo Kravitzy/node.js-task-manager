@@ -13,6 +13,7 @@ router.post('/users', async (req, res) => {
         await user.save()
         sendWelcomeEmail(user.email, user.name)
         const token = await user.generateAuthToken()
+        res.cookie("TOKEN", token, {httpOnly:true, secure: process.env.NODE_ENV == 'prod', maxAge: 1000*60*5});
         res.status(201).send({ user, token })
     } catch (e) {
         res.status(400).send(e)
@@ -23,6 +24,7 @@ router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
+        res.cookie("TOKEN", token, {httpOnly:true, secure: process.env.NODE_ENV == 'prod', maxAge: 1000*60*5});
         res.send({ user, token })
     } catch (e) {
         res.status(400).send()
