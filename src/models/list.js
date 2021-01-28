@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
-const taskSchema = new mongoose.Schema({
-    listName: {
+const listSchema = new mongoose.Schema({
+    title: {
         type: String,
         required: true,
         trim: true
@@ -15,6 +15,13 @@ const taskSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const List = mongoose.model('List', taskSchema)
+// creates the connection between user and task
+listSchema.virtual('tasks', {
+    ref: 'Task',
+    localField: '_id',
+    foreignField: 'list'
+})
+
+const List = mongoose.model('List', listSchema)
 
 module.exports = List

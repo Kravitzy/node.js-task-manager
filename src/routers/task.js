@@ -1,7 +1,84 @@
 const express = require('express')
 const Task = require('../models/task')
+const List = require('../models/list')
 const auth = require('../middleware/auth')
 const router = new express.Router()
+
+/////////////////// new lists-
+
+router.post('/lists', auth, async (req, res) => {
+    const list = new List({
+        ...req.body,
+        owner: req.user._id
+    })
+
+    try {
+        await list.save()
+        res.status(201).send(list)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
+
+router.get('/lists', auth, async (req, res) => {
+
+    try {
+        await req.user.populate({
+            path: 'lists',
+        }).execPopulate()
+        res.send(req.user.lists)
+    } catch (e) {
+        console.log(e);
+        res.status(500).send()
+    }
+})
+
+router.get('/list-tasks', auth, async (req, res) => {
+    const match = {}
+    const sort = {}
+
+    const listId = req.query.list
+    if (!listId) {
+        return res.status(400).send()
+    }
+    
+    // query complete
+    if (req.query.completed) {
+        match.completed = req.query.completed === 'true'
+    }
+    
+    // query sort
+    if (req.query.sortBy) {
+        const parts = req.query.sortBy.split(':')
+        sort[parts[0]] = parts[1] === 'desc' ? -1 : 1
+    }
+    
+    // find the list
+    const list = await List.findOne({ _id: listId })
+    if (!list) {
+        return res.status(400).send()
+    }
+
+    try {
+        await list.populate({
+            path: 'tasks',
+            match,
+            options: {
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip),
+                sort
+            }
+        }).execPopulate()
+        console.log('---------------------');
+        console.log(list);
+
+        res.send(list.tasks)
+    } catch (e) {
+        console.log(e);
+        res.status(500).send()
+    }
+})
+//////////////////////
 
 router.post('/tasks', auth, async (req, res) => {
     const task = new Task({

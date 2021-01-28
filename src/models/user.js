@@ -3,6 +3,7 @@ const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const Task = require('./task')
+const List = require('./list')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -55,8 +56,16 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 })
 
+// creates the connection between user and task
 userSchema.virtual('tasks', {
     ref: 'Task',
+    localField: '_id',
+    foreignField: 'owner'
+})
+
+// creates the connection between user and list
+userSchema.virtual('lists', {
+    ref: 'List',
     localField: '_id',
     foreignField: 'owner'
 })
@@ -113,6 +122,7 @@ userSchema.pre('save', async function (next) {
 userSchema.pre('remove', async function (next) {
     const user = this
     await Task.deleteMany({ owner: user._id })
+    await List.deleteMany({ owner: user._id })
     next()
 })
 
