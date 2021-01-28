@@ -24,6 +24,7 @@ router.get('/tasks', auth, async (req, res) => {
     const match = {}
     const sort = {}
 
+
     if (req.query.completed) {
         match.completed = req.query.completed === 'true'
     }
@@ -45,6 +46,7 @@ router.get('/tasks', auth, async (req, res) => {
         }).execPopulate()
         res.send(req.user.tasks)
     } catch (e) {
+        console.log(e);
         res.status(500).send()
     }
 })
