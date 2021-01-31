@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minlength: 7,
+        minlength: 6,
         trim: true,
         validate(value) {
             if (value.toLowerCase().includes('password')) {
@@ -83,7 +83,21 @@ userSchema.methods.toJSON = function () {
 
 userSchema.methods.generateAuthToken = async function () {
     const user = this
-    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, {expiresIn: 15000})
+    const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, {expiresIn: '1h'})
+
+    // for (let i = 0; i < user.tokens.length; i++) {
+    //     const element = user.tokens[i];
+    //     console.log(element);
+    //     jwt.verify(element.token, process.env.JWT_SECRET, (err, decoded) => {
+    //         if (err) {
+    //             console.log('err', err);
+    //         }
+    //         console.log('decoded',decoded);
+    //     })
+    // }
+ 
+    // purge the all tokens from the db
+    user.tokens = [];
 
     user.tokens = user.tokens.concat({ token })
     await user.save()
