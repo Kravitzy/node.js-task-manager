@@ -8,7 +8,7 @@ const app = express()
 
 var corsOptions = {
     credentials: true,
-    origin: ['https://kravitzy-task-app.web.app', 'http://localhost:4200']
+    origin: ['https://kravitzy-task-app.firebaseapp.com/', 'http://localhost:4200']
 }
 
 app.use(cors(corsOptions))
